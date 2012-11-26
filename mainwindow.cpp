@@ -10,8 +10,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setAcceptDrops(true);
     resize(QSize(800, 600));
+    setMinimumSize(200, 200);
+
+    //setMaximumSize(QApplication::desktop()->screenGeometry().width(), QApplication::desktop()->screenGeometry().height());
 
     scene = new QGraphicsScene(this);
 
@@ -23,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     gridLayout->addWidget(view);
 
 
-    updateStatusBar("Programm started");
+    updateStatusBar(tr("Programm started."));
 
     connect(dialog, SIGNAL(rValueChanged(int)), view, SLOT(rValue(int)));
     connect(dialog, SIGNAL(gValueChanged(int)), view, SLOT(gValue(int)));
@@ -31,35 +33,69 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::open(){
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), tr("Images")+" (*.png *.bmp *.jpg *.jpeg);;"+tr("All Files")+" (*.*)");
+    originalFileName = fileName;
     if(!fileName.isEmpty()){
         QImage image(fileName);
         if(image.isNull()){
             QMessageBox::information(this, tr("Image Viewer"), tr("Could not open the file %1.").arg(fileName));
-            return;
+            updateStatusBar(tr("Could not open File."));
+        } else {
+            view->setImage(QPixmap::fromImage(image));
+            updateStatusBar(tr("Image successfully loaded."));
         }
-        view->setImage(QPixmap::fromImage(image));
     }
 }
 
 void MainWindow::save(){
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath());
-    if(!fileName.isEmpty()){
+    QString fileFormat = getFileFormat(originalFileName);
+    if(!originalFileName.isEmpty()){
         QPixmap pixmap = view->imageItem->pixmap();
-        pixmap.save(fileName, "PNG");
+        pixmap.save(originalFileName, fileFormat.toStdString().c_str());
+        updateStatusBar(tr("Image successfully saved."));
+    } else {
+        updateStatusBar(tr("Image could not be saved."));
     }
 }
 
-void MainWindow::zoomIn(){
-    view->scale(1.25, 1.25);
+void MainWindow::saveAs(){
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("PNG")+" (*.png);;"+tr("JPEG")+" (*.jpg *.jpeg);;"+tr("BMP")+" (*.bmp)");
+    QString fileFormat = getFileFormat(fileName);
+    if(!fileName.isEmpty()){
+        QPixmap pixmap = view->imageItem->pixmap();
+        pixmap.save(fileName, fileFormat.toStdString().c_str());
+        updateStatusBar(tr("Image successfully saved."));
+    } else {
+        updateStatusBar(tr("Image could not be saved."));
+    }
 }
 
+QString MainWindow::getFileFormat(QString strImageFileName){
+    QString returnString = "";
+    QStringList splittedStrList = strImageFileName.split(".");
+    if( ((splittedStrList.size())-1) >= 0) {
+        returnString = splittedStrList[((splittedStrList.size())-1)];
+    }
+    return returnString;
+}
+
+/*
+ * todo: implement maximum of 400%
+*/
+void MainWindow::zoomIn(){
+    view->zoomIn(1.25);
+}
+
+/*
+ * todo: implement minimum of 25%
+*/
 void MainWindow::zoomOut(){
-    view->scale(0.8, 0.8);
+    view->zoomOut(0.8);
 }
 
 void MainWindow::normalSize(){
     view->resetTransform();
+    updateStatusBar(tr("Image restored to original size."));
 }
 
 void MainWindow::openDialog(){
@@ -83,30 +119,10 @@ void MainWindow::wheelEvent(QWheelEvent *wheelEvent)
     }
 }
 
-void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+void MainWindow::updateStatusBar(QString string)
 {
-    if(event->mimeData()->hasImage() || event->mimeData()->hasFormat("text/uri-list")){
-        event->acceptProposedAction();
-    }
-}
-
-void MainWindow::dropEvent(QDropEvent *event)
-{
-    getImageFromMimeData(event->mimeData());
-    event->acceptProposedAction();
-}
-
-void MainWindow::getImageFromMimeData(const QMimeData *mimeData){
-   if( mimeData->hasUrls() ){
-        QImage image(mimeData->urls().first().toLocalFile());
-        scene = new QGraphicsScene(this);
-        view->setImage(QPixmap::fromImage(image));
-    }
-}
-
-void MainWindow::updateStatusBar(const char* string)
-{
-    this->statusBar()->showMessage(tr(string));
+   // this->statusBar()->showMessage(string);
+    statusBar()->showMessage(string);
 }
 
 void MainWindow::rValue(int r)

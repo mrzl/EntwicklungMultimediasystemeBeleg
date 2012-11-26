@@ -21,6 +21,7 @@ public:
 public slots:
     void open();
     void save();
+    void saveAs();
     void zoomIn();
     void zoomOut();
     void normalSize();
@@ -33,16 +34,19 @@ public slots:
     void bValue(int b);
 
 public:
-
+    void updateStatusBar(QString string);
+    int cock;
 
 private:
     void createActions();
     void createMenus();
     void updateActions();
-    void updateStatusBar(const char*);
+
+    QString getFileFormat(QString strImageFileName);
+
+    QString originalFileName;
 
     void scaleImage(double scaleFactor);
-    void getImageFromMimeData(const QMimeData *mimeData);
 
     MySliderDialog *dialog;
     MyGraphicsView *view;
@@ -63,8 +67,6 @@ private:
 
 protected:
     virtual void wheelEvent(QWheelEvent *wheelEvent);
-    virtual void dragEnterEvent(QDragEnterEvent *);
-    virtual void dropEvent(QDropEvent *);
 };
 
 #endif // MAINWINDOW_H

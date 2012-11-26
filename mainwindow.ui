@@ -29,6 +29,7 @@
     </property>
     <addaction name="openImageAction"/>
     <addaction name="saveImageAction"/>
+    <addaction name="saveImageAsAction"/>
     <addaction name="separator"/>
     <addaction name="exitAction"/>
    </widget>
@@ -68,10 +69,15 @@
    </attribute>
    <addaction name="openImageAction"/>
    <addaction name="saveImageAction"/>
+   <addaction name="saveImageAsAction"/>
   </widget>
   <action name="openImageAction">
    <property name="enabled">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="rescource.qrc">
+     <normaloff>:/rescource/icons/document-open-2.png</normaloff>:/rescource/icons/document-open-2.png</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -87,6 +93,10 @@
    </property>
   </action>
   <action name="saveImageAction">
+   <property name="icon">
+    <iconset resource="rescource.qrc">
+     <normaloff>:/rescource/icons/document-export.png</normaloff>:/rescource/icons/document-export.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
@@ -109,6 +119,10 @@
    </property>
   </action>
   <action name="zoomInAction">
+   <property name="icon">
+    <iconset resource="rescource.qrc">
+     <normaloff>:/rescource/icons/zoom-in-3.png</normaloff>:/rescource/icons/zoom-in-3.png</iconset>
+   </property>
    <property name="text">
     <string>Zoom in</string>
    </property>
@@ -120,6 +134,10 @@
    </property>
   </action>
   <action name="zoomOutAction">
+   <property name="icon">
+    <iconset resource="rescource.qrc">
+     <normaloff>:/rescource/icons/zoom-out-3.png</normaloff>:/rescource/icons/zoom-out-3.png</iconset>
+   </property>
    <property name="text">
     <string>Zoom Out</string>
    </property>
@@ -131,6 +149,10 @@
    </property>
   </action>
   <action name="normalSizeAction">
+   <property name="icon">
+    <iconset resource="rescource.qrc">
+     <normaloff>:/rescource/icons/zoom-fit-best-2.png</normaloff>:/rescource/icons/zoom-fit-best-2.png</iconset>
+   </property>
    <property name="text">
     <string>Normal Size</string>
    </property>
@@ -156,9 +178,20 @@
     <string>Open Dialog</string>
    </property>
   </action>
+  <action name="saveImageAsAction">
+   <property name="icon">
+    <iconset resource="rescource.qrc">
+     <normaloff>:/rescource/icons/document-save-all.png</normaloff>:/rescource/icons/document-save-all.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save As</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="rescource.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>exitAction</sender>
@@ -304,6 +337,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>saveImageAsAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>open()</slot>
@@ -314,5 +363,6 @@
   <slot>aboutQt()</slot>
   <slot>save()</slot>
   <slot>openDialog()</slot>
+  <slot>saveAs()</slot>
  </slots>
 </ui>

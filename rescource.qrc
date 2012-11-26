@@ -1,3 +1,10 @@
 <RCC>
-    <qresource prefix="/rescource/icons"/>
+    <qresource prefix="/rescource/icons">
+        <file>document-export.png</file>
+        <file>document-open-2.png</file>
+        <file>zoom-fit-best-2.png</file>
+        <file>zoom-in-3.png</file>
+        <file>zoom-out-3.png</file>
+        <file>document-save-all.png</file>
+    </qresource>
 </RCC>

@@ -7,17 +7,17 @@ MySliderDialog::MySliderDialog(QWidget *parent) :
     ui(new Ui::MySliderDialog)
 {
     ui->setupUi(this);
-    connect(ui->horizontalSlider,
+    connect(ui->redValueSlider,
             SIGNAL(valueChanged(int)),
             this,
             SIGNAL(rValueChanged(int)));
 
-    connect(ui->horizontalSlider_2,
+    connect(ui->greenValueSlider,
             SIGNAL(valueChanged(int)),
             this,
             SIGNAL(gValueChanged(int)));
 
-    connect(ui->horizontalSlider_3,
+    connect(ui->blueValueSlider,
             SIGNAL(valueChanged(int)),
             this,
             SIGNAL(bValueChanged(int)));
