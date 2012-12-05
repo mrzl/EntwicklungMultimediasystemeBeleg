@@ -33,6 +33,9 @@ public slots:
     void gValue(int g);
     void bValue(int b);
 
+    void copyImage();
+    void pasteImage();
+
 public:
     void updateStatusBar(QString string);
     int cock;
@@ -65,8 +68,6 @@ private:
     QAction *aboutAction;
     QAction *aboutQtAction;
 
-protected:
-    virtual void wheelEvent(QWheelEvent *wheelEvent);
 };
 
 #endif // MAINWINDOW_H

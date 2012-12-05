@@ -30,6 +30,8 @@
     <addaction name="openImageAction"/>
     <addaction name="saveImageAction"/>
     <addaction name="saveImageAsAction"/>
+    <addaction name="copyAction"/>
+    <addaction name="pasteAction"/>
     <addaction name="separator"/>
     <addaction name="exitAction"/>
    </widget>
@@ -185,6 +187,22 @@
    </property>
    <property name="text">
     <string>Save As</string>
+   </property>
+  </action>
+  <action name="copyAction">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="pasteAction">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>
@@ -353,6 +371,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>copyAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>copyImage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pasteAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>pasteImage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>open()</slot>
@@ -364,5 +414,7 @@
   <slot>save()</slot>
   <slot>openDialog()</slot>
   <slot>saveAs()</slot>
+  <slot>copyImage()</slot>
+  <slot>pasteImage()</slot>
  </slots>
 </ui>

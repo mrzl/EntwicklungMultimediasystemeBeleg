@@ -20,6 +20,8 @@ private:
     void getImageFromMimeData(const QMimeData *mimeData);
     int oldR, oldG, oldB;
     QMainWindow *par;
+
+    int oldX, oldY;
     
 public:
     QGraphicsPixmapItem *imageItem;
@@ -35,6 +37,9 @@ protected:
     virtual void dropEvent(QDropEvent *);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void wheelEvent(QWheelEvent *wheelEvent);
+    virtual void mousePressEvent(QMouseEvent *event);
 };
 
 #endif // MYGRAPHICSVIEW_H

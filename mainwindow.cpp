@@ -42,6 +42,8 @@ void MainWindow::open(){
             updateStatusBar(tr("Could not open File."));
         } else {
             view->setImage(QPixmap::fromImage(image));
+
+            setWindowTitle(fileName);
             updateStatusBar(tr("Image successfully loaded."));
         }
     }
@@ -80,14 +82,14 @@ QString MainWindow::getFileFormat(QString strImageFileName){
 }
 
 /*
- * todo: implement maximum of 400%
+ *
 */
 void MainWindow::zoomIn(){
     view->zoomIn(1.25);
 }
 
 /*
- * todo: implement minimum of 25%
+ *
 */
 void MainWindow::zoomOut(){
     view->zoomOut(0.8);
@@ -110,18 +112,8 @@ void MainWindow::aboutQt(){
     QMessageBox::aboutQt(this);
 }
 
-void MainWindow::wheelEvent(QWheelEvent *wheelEvent)
-{
-    if(wheelEvent->delta() > 0){
-        zoomIn();
-    } else {
-        zoomOut();
-    }
-}
-
 void MainWindow::updateStatusBar(QString string)
 {
-   // this->statusBar()->showMessage(string);
     statusBar()->showMessage(string);
 }
 
@@ -138,6 +130,39 @@ void MainWindow::gValue(int g)
 void MainWindow::bValue(int b)
 {
     view->bValue(b);
+}
+
+void MainWindow::copyImage(){
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setImage(view->imageItem->pixmap().toImage());
+    updateStatusBar(tr("Copied image to clipboard."));
+}
+
+void MainWindow::pasteImage(){
+    QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+
+    //checks if the clipboard contains an url to a file and sets it
+    //in the view if it is an image
+    if(mimeData->hasUrls()){
+        QImage image(mimeData->urls().first().toLocalFile());
+        if(!image.isNull()){
+            setWindowTitle(mimeData->urls().first().toString());
+            view->setImage(QPixmap::fromImage(image));
+            updateStatusBar(tr("Pasting from clipboard succeded."));
+        } else {
+            updateStatusBar(tr("Pasting from clipboard failed."));
+        }
+    }
+
+    //checks if an image is in the clipboard and sets in the view
+    if(clipboard->image().isNull()){
+        updateStatusBar(tr("Pasting from clipboard failed."));
+    } else {
+        view->setImage(QPixmap::fromImage(clipboard->image()));
+        updateStatusBar(tr("Pasting from clipboard succeded."));
+        setWindowTitle("*");
+    }
 }
 
 MainWindow::~MainWindow()

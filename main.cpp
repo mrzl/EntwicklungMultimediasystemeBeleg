@@ -3,6 +3,9 @@
 
 #include <QtGui>
 
+/*
+ * titanpad: http://titanpad.com/mNrSH0dCdc
+*/
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

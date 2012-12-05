@@ -7,6 +7,8 @@ MyGraphicsView::MyGraphicsView(QMainWindow *parent) :
 {
     par = parent;
 
+    this->setCursor(Qt::OpenHandCursor);
+
     imageItem = new QGraphicsPixmapItem();
     backupItem = new QGraphicsPixmapItem();
     setAcceptDrops(true);
@@ -149,21 +151,59 @@ void MyGraphicsView::dropEvent(QDropEvent *event)
     update();
 }
 
+void MyGraphicsView::mousePressEvent(QMouseEvent *event){
+    event->setAccepted(true);
+    oldX = event->x();
+    oldY = event->y();
+}
+
 void MyGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     this->setCursor(Qt::ClosedHandCursor);
+    event->setAccepted(true);
+
+    int newX = event->x();
+    int newY = event->y();
+    imageItem->translate(newX-oldX, newY-oldY);
+    oldX = newX;
+    oldY = newY;
+}
+
+void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
+    this->setCursor(Qt::OpenHandCursor);
 }
 
 void MyGraphicsView::mouseDoubleClickEvent(QMouseEvent *event)
 {
     resetTransform();
+    QClipboard *clipboard = QApplication::clipboard();
+     //QString originalText = clipboard->text();
+    clipboard->setText("newText");
+}
+
+
+void MyGraphicsView::wheelEvent(QWheelEvent *wheelEvent)
+{
+    if(wheelEvent->delta() > 0){
+        zoomIn(1.25);
+    } else {
+        zoomOut(0.8);
+    }
 }
 
 void MyGraphicsView::getImageFromMimeData(const QMimeData *mimeData){
    if( mimeData->hasUrls() ){
         QImage image(mimeData->urls().first().toLocalFile());
+        if(!image.isNull()){
             setImage(QPixmap::fromImage(image));
-    }
+            dynamic_cast<MainWindow*>(par)->updateStatusBar(tr("Image sucessfully loaded."));
+            dynamic_cast<MainWindow*>(par)->setWindowTitle(mimeData->urls().first().toString());
+        } else {
+             dynamic_cast<MainWindow*>(par)->updateStatusBar(tr("Image loading failed."));
+        }
+    } else {
+       dynamic_cast<MainWindow*>(par)->updateStatusBar(tr("Image loading failed."));
+   }
 }
 
 void MyGraphicsView::setImage(QPixmap map){
@@ -172,7 +212,6 @@ void MyGraphicsView::setImage(QPixmap map){
 
     backupItem->setPos(0, 0);
     backupItem->setPixmap(map);
-    qDebug() << imageItem->pos()<< " " << imageItem->pos();
     resetMatrix();
 
     if(scene()->items().isEmpty()){
