@@ -7,6 +7,9 @@ MySliderDialog::MySliderDialog(QWidget *parent) :
     ui(new Ui::MySliderDialog)
 {
     ui->setupUi(this);
+
+    ui->radioButton->setChecked(false);
+
     connect(ui->redValueSlider,
             SIGNAL(valueChanged(int)),
             this,
@@ -21,6 +24,16 @@ MySliderDialog::MySliderDialog(QWidget *parent) :
             SIGNAL(valueChanged(int)),
             this,
             SIGNAL(bValueChanged(int)));
+
+    connect(ui->radioButton,
+            SIGNAL(clicked(bool)),
+            this,
+            SIGNAL(previewChanged(bool)));
+
+    connect(ui->buttonBox,
+            SIGNAL(accepted()),
+            this,
+            SIGNAL(buttonAccepted()));
 }
 
 MySliderDialog::~MySliderDialog()

@@ -27,9 +27,28 @@ MainWindow::MainWindow(QWidget *parent) :
 
     updateStatusBar(tr("Programm started."));
 
+    for (int i = 0; i < MaxRecentFiles; ++i) {
+        recentFileActs[i] = new QAction("recent"+i, this);
+        recentFileActs[i]->setVisible(true);
+        connect(recentFileActs[i], SIGNAL(triggered()),
+                     this, SLOT(openRecentFile()));
+    }
+    ui->menuFile->addSeparator();
+
+    for (int i = 0; i < MaxRecentFiles; ++i){
+        ui->menuFile->addAction(recentFileActs[i]);
+    }
+
+
+    updateRecentFileActions();
+
     connect(dialog, SIGNAL(rValueChanged(int)), view, SLOT(rValue(int)));
     connect(dialog, SIGNAL(gValueChanged(int)), view, SLOT(gValue(int)));
     connect(dialog, SIGNAL(bValueChanged(int)), view, SLOT(bValue(int)));
+    connect(dialog, SIGNAL(previewChanged(bool)), view, SLOT(preview(bool)));
+    connect(dialog, SIGNAL(buttonAccepted()), view, SLOT(okayButton()));
+
+    readSettings();
 }
 
 void MainWindow::open(){
@@ -45,6 +64,9 @@ void MainWindow::open(){
 
             setWindowTitle(fileName);
             updateStatusBar(tr("Image successfully loaded."));
+
+            //recent files
+            setCurrentFile(fileName);
         }
     }
 }
@@ -55,6 +77,9 @@ void MainWindow::save(){
         QPixmap pixmap = view->imageItem->pixmap();
         pixmap.save(originalFileName, fileFormat.toStdString().c_str());
         updateStatusBar(tr("Image successfully saved."));
+
+        //recent files
+        setCurrentFile(originalFileName);
     } else {
         updateStatusBar(tr("Image could not be saved."));
     }
@@ -67,6 +92,9 @@ void MainWindow::saveAs(){
         QPixmap pixmap = view->imageItem->pixmap();
         pixmap.save(fileName, fileFormat.toStdString().c_str());
         updateStatusBar(tr("Image successfully saved."));
+
+        //recent fils
+        setCurrentFile(fileName);
     } else {
         updateStatusBar(tr("Image could not be saved."));
     }
@@ -165,8 +193,101 @@ void MainWindow::pasteImage(){
     }
 }
 
+void MainWindow::loadFile(const QString &fileName){
+    originalFileName = fileName;
+    if(!fileName.isEmpty()){
+        QImage image(fileName);
+        if(image.isNull()){
+            QMessageBox::information(this, tr("Image Viewer"), tr("Could not open the file %1.").arg(fileName));
+            updateStatusBar(tr("Could not open File."));
+        } else {
+            view->setImage(QPixmap::fromImage(image));
+
+            setWindowTitle(fileName);
+            updateStatusBar(tr("Image successfully loaded."));
+
+            //recent files
+
+            setCurrentFile(fileName);
+
+        }
+    }
+}
+
+void MainWindow::readSettings(){
+    QSettings settings( "ai.bachelor.htw-berlin.de", "EMS-Beleg");
+
+    settings.beginGroup("MainWindow");
+    resize(settings.value("size", QSize(400, 400)).toSize());
+    move(settings.value("pos", QPoint(200, 200)).toPoint());
+    settings.endGroup();
+}
+
+void MainWindow::writeSettings(){
+    QSettings settings("ai.bachelor.htw-berlin.de", "EMS-Beleg");
+
+    settings.beginGroup("MainWindow");
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.setValue("isMinimized", isMinimized());
+    settings.setValue("isMaximized", isMaximized());
+    settings.endGroup();
+}
+
+void MainWindow::closeEvent(QCloseEvent *){
+    writeSettings();
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+void MainWindow::openRecentFile()
+{
+     QAction *action = qobject_cast<QAction *>(sender());
+     if (action) {
+         loadFile(action->data().toString());
+     }
+}
+
+void MainWindow::setCurrentFile(const QString &fileName)
+ {
+     curFile = fileName;
+
+     QSettings settings("ai.bachelor.htw-berlin.de", "EMS-Beleg");
+     settings.beginGroup("RecentFiles");
+     QStringList files = settings.value("recentFileList").toStringList();
+     files.removeAll(fileName);
+     files.prepend(fileName);
+     while (files.size() > MaxRecentFiles)
+         files.removeLast();
+
+     settings.setValue("recentFileList", files);
+     settings.endGroup();
+
+     updateRecentFileActions();
+ }
+
+void MainWindow::updateRecentFileActions()
+ {
+     QSettings settings("ai.bachelor.htw-berlin.de", "EMS-Beleg");
+     settings.beginGroup("RecentFiles");
+     QStringList files = settings.value("recentFileList").toStringList();
+     settings.endGroup();
+
+     int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
+     for (int i = 0; i < numRecentFiles; ++i) {
+         QString text = tr("&%1 %2").arg(i + 1).arg(strippedName(files[i]));
+         recentFileActs[i]->setText(text);
+         recentFileActs[i]->setData(files[i]);
+         recentFileActs[i]->setVisible(true);
+     }
+     for (int j = numRecentFiles; j < MaxRecentFiles; ++j)
+         recentFileActs[j]->setVisible(false);
+ }
+
+ QString MainWindow::strippedName(const QString &fullFileName)
+ {
+     return QFileInfo(fullFileName).fileName();
+ }

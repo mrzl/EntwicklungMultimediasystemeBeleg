@@ -36,9 +36,13 @@ public slots:
     void copyImage();
     void pasteImage();
 
+    // recent files
+    void openRecentFile();
+
 public:
     void updateStatusBar(QString string);
-    int cock;
+    void readSettings();
+    void writeSettings();
 
 private:
     void createActions();
@@ -68,6 +72,18 @@ private:
     QAction *aboutAction;
     QAction *aboutQtAction;
 
+    //recent files
+    QString curFile;
+    void setCurrentFile(const QString &fileName);
+    void updateRecentFileActions();
+    QString strippedName(const QString &fullFileName);
+    QMenu *recentFilesMenu;
+    enum { MaxRecentFiles = 5 };
+    QAction *recentFileActs[MaxRecentFiles];
+    void loadFile(const QString &fileName);
+
+protected:
+    void closeEvent(QCloseEvent *);
 };
 
 #endif // MAINWINDOW_H

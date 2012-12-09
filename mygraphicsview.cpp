@@ -2,6 +2,10 @@
 #include "mainwindow.h"
 #include <QtGui>
 
+#define RED 1
+#define GREEN 2
+#define BLUE 3
+
 MyGraphicsView::MyGraphicsView(QMainWindow *parent) :
     QGraphicsView(parent)
 {
@@ -13,119 +17,120 @@ MyGraphicsView::MyGraphicsView(QMainWindow *parent) :
     backupItem = new QGraphicsPixmapItem();
     setAcceptDrops(true);
     oldR = oldG = oldB = 1;
+    currentR = currentG = currentB = 1;
+    isPreviewed = false;
 }
 
 void MyGraphicsView::rValue(int r)
 {
-    qDebug() << "r: " << r;
-    QPixmap map;
-    if(r > oldR){
-        map = imageItem->pixmap();
+    if(isPreviewed){
+        changeImage(r, RED);
     } else {
-        map = backupItem->pixmap();
+        currentR = r;
     }
-    QImage im = map.toImage();
-
-    for(int i=0; i<im.width()-r; i+=r){
-        for(int j=0; j<im.height()-r; j+=r){
-            int rSum = 0;
-            for(int k=i; k<i+r; k++){
-                for(int o=j; o<j+r; o++){
-                    QRgb pixelColor = im.pixel(k, o);
-                    int value = qRed(pixelColor);
-                    rSum += value;
-                }
-            }
-
-            rSum = rSum/(r*r);
-
-            for(int k=i; k<i+r; k++){
-                for(int o=j; o<j+r; o++){
-                    QRgb pixelColor = qRgb(rSum, qGreen(im.pixel(k, o)), qBlue(im.pixel(k, o)));
-                    im.setPixel(k, o, pixelColor);
-                }
-            }
-        }
-    }
-
-    imageItem->setPixmap(QPixmap::fromImage(im));
-    oldR = r;
 }
 
 void MyGraphicsView::gValue(int g)
 {
-    qDebug() << "g: " << g;
-
-    QPixmap map;
-    if(g > oldG){
-        map = imageItem->pixmap();
+    if(isPreviewed){
+        changeImage(g, GREEN);
     } else {
-        map = backupItem->pixmap();
+        currentG = g;
     }
-    QImage im = map.toImage();
-
-    for(int i=0; i<im.width()-g; i+=g){
-        for(int j=0; j<im.height()-g; j+=g){
-            int rSum = 0;
-            for(int k=i; k<i+g; k++){
-                for(int o=j; o<j+g; o++){
-                    QRgb pixelColor = im.pixel(k, o);
-                    int value = qGreen(pixelColor);
-                    rSum += value;
-                }
-            }
-
-            rSum = rSum/(g*g);
-
-            for(int k=i; k<i+g; k++){
-                for(int o=j; o<j+g; o++){
-                    QRgb pixelColor = qRgb(qRed(im.pixel(k, o)), rSum, qBlue(im.pixel(k, o)));
-                    im.setPixel(k, o, pixelColor);
-                }
-            }
-        }
-    }
-
-    imageItem->setPixmap(QPixmap::fromImage(im));
-    oldG = g;
 }
 
 void MyGraphicsView::bValue(int b)
 {
-    qDebug() << "b: " << b;
-
-    QPixmap map;
-    if(b > oldB){
-        map = imageItem->pixmap();
+    if(isPreviewed){
+        changeImage(b, BLUE);
     } else {
-        map = backupItem->pixmap();
+       currentB = b;
     }
-    QImage im = map.toImage();
+}
 
-    for(int i=0; i<im.width()-b; i+=b){
-        for(int j=0; j<im.height()-b; j+=b){
+void MyGraphicsView::changeImage(int sampleRate, int color)
+{
+    QPixmap origiMap = backupItem->pixmap();
+    QImage image = origiMap.toImage();
+    QRgb pixelColor;
+    for(int curWidth = 0; curWidth < image.width() - sampleRate; curWidth += sampleRate)
+    {
+        for(int curHeight = 0; curHeight < image.height() - sampleRate; curHeight += sampleRate)
+        {
             int rSum = 0;
-            for(int k=i; k<i+b; k++){
-                for(int o=j; o<j+b; o++){
-                    QRgb pixelColor = im.pixel(k, o);
-                    int value = qBlue(pixelColor);
-                    rSum += value;
-                }
-            }
-
-            rSum = rSum/(b*b);
-
-            for(int k=i; k<i+b; k++){
-                for(int o=j; o<j+b; o++){
-                    QRgb pixelColor = qRgb(qRed(im.pixel(k, o)), qGreen(im.pixel(k, o)), rSum);
-                    im.setPixel(k, o, pixelColor);
+            rSum = getColorSum(curWidth, curWidth + sampleRate,curHeight, curHeight + sampleRate, image, color);
+            rSum = rSum / (sampleRate * sampleRate);
+            //set the colors around the pixel
+            for(int k = curWidth; k < curWidth + sampleRate; k++)
+            {
+                for(int o = curHeight; o < curHeight + sampleRate; o++)
+                {
+                    switch(color)
+                    {
+                     case 1:
+                        pixelColor = qRgb(rSum, qGreen(image.pixel(k, o)), qBlue(image.pixel(k, o)));
+                        break;
+                     case 2:
+                        pixelColor = qRgb(qRed(image.pixel(k,o)), rSum, qBlue(image.pixel(k, o)));
+                        break;
+                     case 3:
+                        pixelColor = qRgb(qRed(image.pixel(k,o)), qGreen(image.pixel(k, o)), rSum);
+                        break;
+                     default:
+                        break;
+                    }
+                    image.setPixel(k, o, pixelColor);
                 }
             }
         }
     }
+    imageItem->setPixmap(QPixmap::fromImage(image));
+}
 
-    imageItem->setPixmap(QPixmap::fromImage(im));
-    oldB = b;
+int MyGraphicsView::getColorSum(int startW, int endW, int startH, int endH, QImage image, int color)
+{
+    QRgb pixelColor;
+    int sum = 0;
+    int value = 0;
+    for(int k = startW; k < endW; k++)
+    {
+        for(int  o = startH; o < endH; o++)
+        {
+            pixelColor = image.pixel(k, o);
+            switch(color)
+            {
+             case 1:
+                value = qRed(pixelColor);
+                break;
+             case 2:
+                value = qGreen(pixelColor);
+                break;
+             case 3:
+                value = qBlue(pixelColor);
+                break;
+             default:
+                break;
+            }
+            sum += value;
+        }
+    }
+    return sum;
+}
+
+void MyGraphicsView::preview(bool preview){
+    isPreviewed = preview;
+}
+
+void MyGraphicsView::okayButton(){
+    bool oldIsPrevied = isPreviewed;
+    isPreviewed = true;
+    qDebug() << "r:"+currentR;
+    qDebug() << "g:"+currentG;
+    qDebug() << "b:"+currentB;
+    rValue(currentR);
+    gValue(currentG);
+    bValue(currentB);
+    isPreviewed = oldIsPrevied;
 }
 
 void MyGraphicsView::dragEnterEvent(QDragEnterEvent *event)

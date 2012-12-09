@@ -2,26 +2,29 @@
 #define MYGRAPHICSVIEW_H
 
 #include <QtGui>
-//#include "mainwindow.h"
 
 class MyGraphicsView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    //explicit MyGraphicsView(QWidget *parent = 0);
     explicit MyGraphicsView(QMainWindow *parent);
 
 public slots:
     void rValue(int r);
     void gValue(int g);
     void bValue(int b);
+    void preview(bool preview);
+    void okayButton();
 
 private:
     void getImageFromMimeData(const QMimeData *mimeData);
     int oldR, oldG, oldB;
+    int currentR, currentG, currentB;
     QMainWindow *par;
-
+    bool isPreviewed;
     int oldX, oldY;
+    int getColorSum(int startW, int endW, int startH, int endH, QImage image, int color);
+    void changeImage(int sampleRate, int color);
     
 public:
     QGraphicsPixmapItem *imageItem;

@@ -72,6 +72,9 @@
    <addaction name="openImageAction"/>
    <addaction name="saveImageAction"/>
    <addaction name="saveImageAsAction"/>
+   <addaction name="zoomInAction"/>
+   <addaction name="zoomOutAction"/>
+   <addaction name="normalSizeAction"/>
   </widget>
   <action name="openImageAction">
    <property name="enabled">

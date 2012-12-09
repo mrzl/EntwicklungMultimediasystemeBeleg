@@ -28,6 +28,9 @@
    <property name="standardButtons">
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
+   <property name="centerButtons">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QSlider" name="redValueSlider">
    <property name="geometry">
@@ -412,5 +415,6 @@
   <slot>rValue(int)</slot>
   <slot>gValue(int)</slot>
   <slot>bValue(int)</slot>
+  <slot>preview(bool)</slot>
  </slots>
 </ui>
