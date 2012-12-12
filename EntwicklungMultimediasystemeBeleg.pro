@@ -26,3 +26,5 @@ TRANSLATIONS = Translation_de.ts
 
 RESOURCES += \
     rescource.qrc
+	
+RC_FILE = icon.rc

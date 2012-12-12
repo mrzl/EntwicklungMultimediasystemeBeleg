@@ -133,7 +133,7 @@ void MainWindow::openDialog(){
 }
 
 void MainWindow::about(){
-    QMessageBox::about(this, tr("About Belegarbeit"), tr("Belegarbeit im Fach Entwicklung von Multimediasystemen \nMarcel Schwittlick (s0529494) \nAlexander Marten (s0529999)\nDennis Hägler (s0529999)"));
+    QMessageBox::about(this, tr("About Belegarbeit"), tr("Members: \nMarcel Schwittlick (s0529494) \nAlexander Marten (s0527574)\nDennis Hägler (s0529999)"));
 }
 
 void MainWindow::aboutQt(){
