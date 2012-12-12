@@ -18,73 +18,105 @@ MyGraphicsView::MyGraphicsView(QMainWindow *parent) :
     setAcceptDrops(true);
     oldR = oldG = oldB = 1;
     currentR = currentG = currentB = 1;
-    isPreviewed = false;
+    isPreviewed = isEdited = false;
 }
 
 void MyGraphicsView::rValue(int r)
 {
+    currentR = r;
     if(isPreviewed){
-        changeImage(r, RED);
-    } else {
-        currentR = r;
+        changeImage();
     }
 }
 
 void MyGraphicsView::gValue(int g)
 {
+    currentG = g;
     if(isPreviewed){
-        changeImage(g, GREEN);
-    } else {
-        currentG = g;
+        changeImage();
     }
 }
 
 void MyGraphicsView::bValue(int b)
 {
+    currentB = b;
     if(isPreviewed){
-        changeImage(b, BLUE);
-    } else {
-       currentB = b;
+        changeImage();
     }
 }
 
-void MyGraphicsView::changeImage(int sampleRate, int color)
+void MyGraphicsView::changeImage()
 {
+    if(!isEdited){
+        dynamic_cast<MainWindow*>(par)->setWindowTitle(dynamic_cast<MainWindow*>(par)->windowTitle() + "*");
+    }
+    isEdited = true;
     QPixmap origiMap = backupItem->pixmap();
+    QImage showI = imageItem->pixmap().toImage();
     QImage image = origiMap.toImage();
     QRgb pixelColor;
-    for(int curWidth = 0; curWidth < image.width() - sampleRate; curWidth += sampleRate)
+    int sum = 0;
+
+    //Sets all Red Pixel from original Picture.
+    for(int curWidth = 0; curWidth < image.width() - currentR; curWidth += currentR)
     {
-        for(int curHeight = 0; curHeight < image.height() - sampleRate; curHeight += sampleRate)
+        for(int curHeight = 0; curHeight < image.height() - currentR; curHeight += currentR)
         {
-            int rSum = 0;
-            rSum = getColorSum(curWidth, curWidth + sampleRate,curHeight, curHeight + sampleRate, image, color);
-            rSum = rSum / (sampleRate * sampleRate);
+            sum = 0;
+            sum = getColorSum(curWidth, curWidth + currentR,curHeight, curHeight + currentR, image, RED);
+            sum = sum / (currentR * currentR);
             //set the colors around the pixel
-            for(int k = curWidth; k < curWidth + sampleRate; k++)
+            for(int k = curWidth; k < curWidth + currentR; k++)
             {
-                for(int o = curHeight; o < curHeight + sampleRate; o++)
+                for(int o = curHeight; o < curHeight + currentR; o++)
                 {
-                    switch(color)
-                    {
-                     case 1:
-                        pixelColor = qRgb(rSum, qGreen(image.pixel(k, o)), qBlue(image.pixel(k, o)));
-                        break;
-                     case 2:
-                        pixelColor = qRgb(qRed(image.pixel(k,o)), rSum, qBlue(image.pixel(k, o)));
-                        break;
-                     case 3:
-                        pixelColor = qRgb(qRed(image.pixel(k,o)), qGreen(image.pixel(k, o)), rSum);
-                        break;
-                     default:
-                        break;
-                    }
-                    image.setPixel(k, o, pixelColor);
+                    pixelColor = qRgb(sum, 0, 0);
+                    showI.setPixel(k, o, pixelColor);
                 }
             }
         }
     }
-    imageItem->setPixmap(QPixmap::fromImage(image));
+
+    //Set ALL GREEN
+    for(int curWidth = 0; curWidth < image.width() - currentG; curWidth += currentG)
+    {
+        for(int curHeight = 0; curHeight < image.height() - currentG; curHeight += currentG)
+        {
+            sum = 0;
+            sum = getColorSum(curWidth, curWidth + currentG,curHeight, curHeight + currentG, image, GREEN);
+            sum = sum / (currentG * currentG);
+            //set the colors around the pixel
+            for(int k = curWidth; k < curWidth + currentG; k++)
+            {
+                for(int o = curHeight; o < curHeight + currentG; o++)
+                {
+                    pixelColor = qRgb(qRed(showI.pixel(k, o)), sum, 0);
+                    showI.setPixel(k, o, pixelColor);
+                }
+            }
+        }
+    }
+
+    //Set All blue
+    for(int curWidth = 0; curWidth < image.width() - currentB; curWidth += currentB)
+    {
+        for(int curHeight = 0; curHeight < image.height() - currentB; curHeight += currentB)
+        {
+            sum = 0;
+            sum = getColorSum(curWidth, curWidth + currentB,curHeight, curHeight + currentB, image, BLUE);
+            sum = sum / (currentB * currentB);
+            //set the colors around the pixel
+            for(int k = curWidth; k < curWidth + currentB; k++)
+            {
+                for(int o = curHeight; o < curHeight + currentB; o++)
+                {
+                    pixelColor = qRgb(qRed(showI.pixel(k, o)), qGreen(showI.pixel(k, o)), sum);
+                    showI.setPixel(k, o, pixelColor);
+                }
+            }
+        }
+    }
+    imageItem->setPixmap(QPixmap::fromImage(showI));
 }
 
 int MyGraphicsView::getColorSum(int startW, int endW, int startH, int endH, QImage image, int color)
@@ -122,15 +154,21 @@ void MyGraphicsView::preview(bool preview){
 }
 
 void MyGraphicsView::okayButton(){
-    bool oldIsPrevied = isPreviewed;
-    isPreviewed = true;
-    qDebug() << "r:"+currentR;
-    qDebug() << "g:"+currentG;
-    qDebug() << "b:"+currentB;
-    rValue(currentR);
-    gValue(currentG);
-    bValue(currentB);
-    isPreviewed = oldIsPrevied;
+    changeImage();
+    backupItem = imageItem;
+
+}
+
+/*
+ * todo: implement proper handling of edited files
+*/
+void::MyGraphicsView::rejectedButton(){
+    currentR = currentG = currentB = 1;
+    changeImage();
+    if(isEdited){
+        dynamic_cast<MainWindow*>(par)->setWindowTitle( dynamic_cast<MainWindow*>(par)->windowTitle().remove( dynamic_cast<MainWindow*>(par)->windowTitle().length()-1, 1));
+        isEdited = false;
+    }
 }
 
 void MyGraphicsView::dragEnterEvent(QDragEnterEvent *event)

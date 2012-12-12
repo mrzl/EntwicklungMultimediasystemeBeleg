@@ -22,6 +22,7 @@ signals:
     void bValueChanged(int newBValue);
     void previewChanged(bool preview);
     void buttonAccepted();
+    void buttonRejected();
 
 private:
     Ui::MySliderDialog *ui;

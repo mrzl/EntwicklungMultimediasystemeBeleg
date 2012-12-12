@@ -15,19 +15,22 @@ bool loadStyleSheet(QString fileName){
     return true;
 }
 
-void initTranslation(QApplication app){
+void initTranslation(){
     QString translatorName = "Translation_";
     translatorName.append(QLocale::system().name());
 
+
     QTranslator translator;
-    bool res = translator.load(translatorName, app.applicationDirPath());
+    bool res = translator.load(translatorName, qApp->applicationDirPath());
     qDebug() << translatorName;
     if(!res){
-        //qDebug() << "geht nich";
+        qDebug() << "geht nich";
     } else {
-        //qDebug() << "geht doch";
-        //QApplication::installTranslator(&translator);
-        app.installTranslator(&translator);
+        qDebug() << "geht doch";
+        QApplication::installTranslator(&translator);
+        qApp->installTranslator(&translator);
+        //QCoreApplication::installTranslator(&translator);
+        //qApp->translate();
     }
 }
 
@@ -41,8 +44,7 @@ int main(int argc, char *argv[])
     w.show();
 
     qApp->setWindowIcon(QIcon(qApp->applicationDirPath() + "/" + "icon.ico"));
-    qDebug() << qApp->applicationDirPath() + "/" + "icon.ico";
-    //initTranslation(a);
+    initTranslation();
     /*if(loadStyleSheet("style.qss")){
         qDebug() << "Style loaded successfully";
     } else {

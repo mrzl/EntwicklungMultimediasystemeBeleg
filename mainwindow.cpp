@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     resize(QSize(800, 600));
     setMinimumSize(200, 200);
-
+    setWindowTitle(tr("EMS"));
     //setMaximumSize(QApplication::desktop()->screenGeometry().width(), QApplication::desktop()->screenGeometry().height());
 
     scene = new QGraphicsScene(this);
@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dialog, SIGNAL(bValueChanged(int)), view, SLOT(bValue(int)));
     connect(dialog, SIGNAL(previewChanged(bool)), view, SLOT(preview(bool)));
     connect(dialog, SIGNAL(buttonAccepted()), view, SLOT(okayButton()));
+    connect(dialog, SIGNAL(buttonRejected()), view, SLOT(rejectedButton()));
 
     readSettings();
 }
@@ -133,7 +134,7 @@ void MainWindow::openDialog(){
 }
 
 void MainWindow::about(){
-    QMessageBox::about(this, tr("About Belegarbeit"), tr("Members: \nMarcel Schwittlick (s0529494) \nAlexander Marten (s0527574)\nDennis Hägler (s0529999)"));
+    QMessageBox::about(this, tr("About Belegarbeit"), tr("Members: \nMarcel Schwittlick (s0529494) \nAlexander Marten (s0527574)\nDennis Hägler (s05232338)"));
 }
 
 void MainWindow::aboutQt(){

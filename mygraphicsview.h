@@ -15,16 +15,17 @@ public slots:
     void bValue(int b);
     void preview(bool preview);
     void okayButton();
+    void rejectedButton();
 
 private:
+    QMainWindow *par;
     void getImageFromMimeData(const QMimeData *mimeData);
     int oldR, oldG, oldB;
     int currentR, currentG, currentB;
-    QMainWindow *par;
-    bool isPreviewed;
+    bool isPreviewed, isEdited;
     int oldX, oldY;
     int getColorSum(int startW, int endW, int startH, int endH, QImage image, int color);
-    void changeImage(int sampleRate, int color);
+    void changeImage();
     
 public:
     QGraphicsPixmapItem *imageItem;

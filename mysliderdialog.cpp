@@ -34,6 +34,10 @@ MySliderDialog::MySliderDialog(QWidget *parent) :
             SIGNAL(accepted()),
             this,
             SIGNAL(buttonAccepted()));
+    connect(ui->buttonBox,
+            SIGNAL(rejected()),
+            this,
+            SIGNAL(buttonRejected()));
 }
 
 MySliderDialog::~MySliderDialog()

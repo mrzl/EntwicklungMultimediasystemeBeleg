@@ -7,5 +7,6 @@
         <file>zoom-out-3.png</file>
         <file>document-save-all.png</file>
         <file>icon.ico</file>
+        <file>Translation_de.qm</file>
     </qresource>
 </RCC>
