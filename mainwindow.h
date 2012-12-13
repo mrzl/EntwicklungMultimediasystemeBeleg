@@ -13,7 +13,7 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -29,6 +29,9 @@ public slots:
     void about();
     void aboutQt();
 
+    void languageEnglish();
+    void languageGerman();
+
     void rValue(int r);
     void gValue(int g);
     void bValue(int b);
@@ -36,54 +39,41 @@ public slots:
     void copyImage();
     void pasteImage();
 
-    // recent files
     void openRecentFile();
 
 public:
     void updateStatusBar(QString string);
+
+private:
     void readSettings();
     void writeSettings();
 
-private:
-    void createActions();
-    void createMenus();
-    void updateActions();
-
     QString getFileFormat(QString strImageFileName);
-
     QString originalFileName;
-
-    void scaleImage(double scaleFactor);
+    int saveCancelDiscard();
 
     MySliderDialog *dialog;
     MyGraphicsView *view;
+    QTranslator translatorGerman;
 
+    //layout
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     QGridLayout *gridLayout;
 
-    QAction *openImageAction;
-    QAction *saveImageAction;
-    QAction *exitAction;
-    QAction *zoomInAction;
-    QAction *zoomOutAction;
-    QAction *normalSizeAction;
-    QAction *openDialogAction;
-    QAction *aboutAction;
-    QAction *aboutQtAction;
-
     //recent files
-    QString curFile;
+    enum { MaxRecentFiles = 5 };
+    QMenu *recentFilesMenu;
+    QAction *recentFileActs[MaxRecentFiles];
     void setCurrentFile(const QString &fileName);
     void updateRecentFileActions();
-    QString strippedName(const QString &fullFileName);
-    QMenu *recentFilesMenu;
-    enum { MaxRecentFiles = 5 };
-    QAction *recentFileActs[MaxRecentFiles];
     void loadFile(const QString &fileName);
+    QString curFile;
+    QString strippedName(const QString &fullFileName);
 
 protected:
     void closeEvent(QCloseEvent *);
+    void changeEvent(QEvent *);
 };
 
 #endif // MAINWINDOW_H

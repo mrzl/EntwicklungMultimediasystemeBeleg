@@ -18,7 +18,7 @@ MyGraphicsView::MyGraphicsView(QMainWindow *parent) :
     setAcceptDrops(true);
     oldR = oldG = oldB = 1;
     currentR = currentG = currentB = 1;
-    isPreviewed = isEdited = false;
+    isPreviewed = edited = false;
 }
 
 void MyGraphicsView::rValue(int r)
@@ -28,7 +28,6 @@ void MyGraphicsView::rValue(int r)
         changeImage();
     }
 }
-
 void MyGraphicsView::gValue(int g)
 {
     currentG = g;
@@ -36,7 +35,6 @@ void MyGraphicsView::gValue(int g)
         changeImage();
     }
 }
-
 void MyGraphicsView::bValue(int b)
 {
     currentB = b;
@@ -47,10 +45,7 @@ void MyGraphicsView::bValue(int b)
 
 void MyGraphicsView::changeImage()
 {
-    if(!isEdited){
-        dynamic_cast<MainWindow*>(par)->setWindowTitle(dynamic_cast<MainWindow*>(par)->windowTitle() + "*");
-    }
-    isEdited = true;
+    setEdited(true);
     QPixmap origiMap = backupItem->pixmap();
     QImage showI = imageItem->pixmap().toImage();
     QImage image = origiMap.toImage();
@@ -159,15 +154,12 @@ void MyGraphicsView::okayButton(){
 
 }
 
-/*
- * todo: implement proper handling of edited files
-*/
 void::MyGraphicsView::rejectedButton(){
     currentR = currentG = currentB = 1;
     changeImage();
-    if(isEdited){
+    if(edited){
         dynamic_cast<MainWindow*>(par)->setWindowTitle( dynamic_cast<MainWindow*>(par)->windowTitle().remove( dynamic_cast<MainWindow*>(par)->windowTitle().length()-1, 1));
-        isEdited = false;
+        edited = false;
     }
 }
 
@@ -260,6 +252,26 @@ void MyGraphicsView::setImage(QPixmap map){
     if(scene()->items().isEmpty()){
       scene()->addItem(imageItem);
     }
+}
+
+void MyGraphicsView::setEdited(bool edited){
+    QString windowTitle = dynamic_cast<MainWindow*>(par)->windowTitle();
+    QString lastCharacterOfTitle = windowTitle.mid(windowTitle.length()-1, 1);
+    if(edited){
+       if(lastCharacterOfTitle != "*"){
+           windowTitle.append("*");
+       }
+    } else {
+        if(lastCharacterOfTitle == "*"){
+            windowTitle = windowTitle.mid(0, windowTitle.length()-1);
+        }
+    }
+    dynamic_cast<MainWindow*>(par)->setWindowTitle(windowTitle);
+    this->edited = edited;
+}
+
+bool MyGraphicsView::isEdited(){
+    return edited;
 }
 
 void MyGraphicsView::zoomIn(float factor){

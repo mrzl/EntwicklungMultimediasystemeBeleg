@@ -22,15 +22,19 @@ private:
     void getImageFromMimeData(const QMimeData *mimeData);
     int oldR, oldG, oldB;
     int currentR, currentG, currentB;
-    bool isPreviewed, isEdited;
+    bool isPreviewed;
     int oldX, oldY;
     int getColorSum(int startW, int endW, int startH, int endH, QImage image, int color);
     void changeImage();
+    bool edited;
     
 public:
     QGraphicsPixmapItem *imageItem;
     QGraphicsPixmapItem *backupItem;
     void setImage(QPixmap map);
+
+    void setEdited(bool edited);
+    bool isEdited();
 
     void zoomIn(float factor);
     void zoomOut(float factor);
@@ -44,6 +48,7 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void wheelEvent(QWheelEvent *wheelEvent);
     virtual void mousePressEvent(QMouseEvent *event);
+
 };
 
 #endif // MYGRAPHICSVIEW_H

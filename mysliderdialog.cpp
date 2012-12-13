@@ -40,6 +40,12 @@ MySliderDialog::MySliderDialog(QWidget *parent) :
             SIGNAL(buttonRejected()));
 }
 
+void MySliderDialog::reset(){
+    ui->redValueSlider->setValue(1);
+    ui->greenValueSlider->setValue(1);
+    ui->blueValueSlider->setValue(1);
+}
+
 MySliderDialog::~MySliderDialog()
 {
     delete ui;

@@ -24,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent) :
     gridLayout = new QGridLayout(ui->centralWidget);
     gridLayout->addWidget(view);
 
-
     updateStatusBar(tr("Programm started."));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
@@ -39,6 +38,14 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->menuFile->addAction(recentFileActs[i]);
     }
 
+    QString translatorName = "Translation_";
+    translatorName.append(QLocale::system().name());
+
+
+    bool successfullyLoaded = translatorGerman.load(translatorName, qApp->applicationDirPath());
+    if(successfullyLoaded){
+        qDebug() << "loaded translation successful.";
+    }
 
     updateRecentFileActions();
 
@@ -53,6 +60,14 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::open(){
+    if(view->isEdited()){
+        int returnValue = saveCancelDiscard();
+        if(returnValue == QMessageBox::Cancel){
+            return;
+        }
+    }
+
+    dialog->reset();
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), tr("Images")+" (*.png *.bmp *.jpg *.jpeg);;"+tr("All Files")+" (*.*)");
     originalFileName = fileName;
     if(!fileName.isEmpty()){
@@ -68,6 +83,7 @@ void MainWindow::open(){
 
             //recent files
             setCurrentFile(fileName);
+            view->setEdited(false);
         }
     }
 }
@@ -81,6 +97,7 @@ void MainWindow::save(){
 
         //recent files
         setCurrentFile(originalFileName);
+        view->setEdited(false);
     } else {
         updateStatusBar(tr("Image could not be saved."));
     }
@@ -96,6 +113,7 @@ void MainWindow::saveAs(){
 
         //recent fils
         setCurrentFile(fileName);
+        view->setEdited(false);
     } else {
         updateStatusBar(tr("Image could not be saved."));
     }
@@ -110,16 +128,10 @@ QString MainWindow::getFileFormat(QString strImageFileName){
     return returnString;
 }
 
-/*
- *
-*/
 void MainWindow::zoomIn(){
     view->zoomIn(1.25);
 }
 
-/*
- *
-*/
 void MainWindow::zoomOut(){
     view->zoomOut(0.8);
 }
@@ -168,6 +180,15 @@ void MainWindow::copyImage(){
 }
 
 void MainWindow::pasteImage(){
+    if(view->isEdited()){
+        int returnValue = saveCancelDiscard();
+        if(returnValue == QMessageBox::Cancel){
+            return;
+        }
+    }
+
+    dialog->reset();
+
     QClipboard *clipboard = QApplication::clipboard();
     const QMimeData *mimeData = clipboard->mimeData();
 
@@ -178,6 +199,7 @@ void MainWindow::pasteImage(){
         if(!image.isNull()){
             setWindowTitle(mimeData->urls().first().toString());
             view->setImage(QPixmap::fromImage(image));
+            view->setEdited(false);
             updateStatusBar(tr("Pasting from clipboard succeded."));
         } else {
             updateStatusBar(tr("Pasting from clipboard failed."));
@@ -189,12 +211,22 @@ void MainWindow::pasteImage(){
         updateStatusBar(tr("Pasting from clipboard failed."));
     } else {
         view->setImage(QPixmap::fromImage(clipboard->image()));
+        view->setEdited(false);
         updateStatusBar(tr("Pasting from clipboard succeded."));
         setWindowTitle("*");
     }
 }
 
 void MainWindow::loadFile(const QString &fileName){
+    if(view->isEdited()){
+        int returnValue = saveCancelDiscard();
+        if(returnValue == QMessageBox::Cancel){
+            return;
+        }
+    }
+
+    dialog->reset();
+
     originalFileName = fileName;
     if(!fileName.isEmpty()){
         QImage image(fileName);
@@ -210,7 +242,7 @@ void MainWindow::loadFile(const QString &fileName){
             //recent files
 
             setCurrentFile(fileName);
-
+            view->setEdited(false);
         }
     }
 }
@@ -226,7 +258,6 @@ void MainWindow::readSettings(){
 
 void MainWindow::writeSettings(){
     QSettings settings("ai.bachelor.htw-berlin.de", "EMS-Beleg");
-
     settings.beginGroup("MainWindow");
     settings.setValue("size", size());
     settings.setValue("pos", pos());
@@ -235,8 +266,40 @@ void MainWindow::writeSettings(){
     settings.endGroup();
 }
 
-void MainWindow::closeEvent(QCloseEvent *){
+void MainWindow::closeEvent(QCloseEvent *event){
     writeSettings();
+    if(view->isEdited()){
+        int returnValue = saveCancelDiscard();
+        switch(returnValue){
+        case QMessageBox::Save:
+            event->accept();
+            break;
+        case QMessageBox::Cancel:
+            event->ignore();
+            break;
+        case QMessageBox::Discard:
+            event->accept();
+        }
+    }
+}
+
+int MainWindow::saveCancelDiscard(){
+    QMessageBox msgBox;
+     msgBox.setText("The image has been edited.");
+     msgBox.setInformativeText("Do you want to save your changes?");
+     msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+     msgBox.setDefaultButton(QMessageBox::Save);
+     int ret = msgBox.exec();
+     qDebug() << ret;
+     if(ret == QMessageBox::Save){
+         saveAs();
+         dialog->reset();
+         return QMessageBox::Save;
+     } else if(ret == QMessageBox::Discard){
+         return QMessageBox::Discard;
+     } else if(ret == QMessageBox::Cancel) {
+         return QMessageBox::Cancel;
+     }
 }
 
 MainWindow::~MainWindow()
@@ -291,4 +354,19 @@ void MainWindow::updateRecentFileActions()
  QString MainWindow::strippedName(const QString &fullFileName)
  {
      return QFileInfo(fullFileName).fileName();
+ }
+
+ void MainWindow::languageEnglish(){
+    qApp->removeTranslator(&translatorGerman);
+ }
+
+ void MainWindow::languageGerman(){
+    qApp->installTranslator(&translatorGerman);
+ }
+
+ void MainWindow::changeEvent(QEvent *event){
+     if(event->type() == QEvent::LanguageChange){
+         ui->retranslateUi(this);
+         qDebug() << "changevent";
+     }
  }

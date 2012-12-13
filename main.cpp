@@ -15,25 +15,6 @@ bool loadStyleSheet(QString fileName){
     return true;
 }
 
-void initTranslation(){
-    QString translatorName = "Translation_";
-    translatorName.append(QLocale::system().name());
-
-
-    QTranslator translator;
-    bool res = translator.load(translatorName, qApp->applicationDirPath());
-    qDebug() << translatorName;
-    if(!res){
-        qDebug() << "geht nich";
-    } else {
-        qDebug() << "geht doch";
-        QApplication::installTranslator(&translator);
-        qApp->installTranslator(&translator);
-        //QCoreApplication::installTranslator(&translator);
-        //qApp->translate();
-    }
-}
-
 /*
  * titanpad: http://titanpad.com/mNrSH0dCdc
 */
@@ -44,13 +25,6 @@ int main(int argc, char *argv[])
     w.show();
 
     qApp->setWindowIcon(QIcon(qApp->applicationDirPath() + "/" + "icon.ico"));
-    initTranslation();
-    /*if(loadStyleSheet("style.qss")){
-        qDebug() << "Style loaded successfully";
-    } else {
-        qDebug() << "Could not load Style";
-    }*/
-
     return a.exec();
 }
 

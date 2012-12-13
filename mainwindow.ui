@@ -50,9 +50,18 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <widget class="QMenu" name="menuLanguage">
+     <property name="title">
+      <string>Language</string>
+     </property>
+     <addaction name="actionEnglish"/>
+     <addaction name="actionGerman"/>
+    </widget>
     <addaction name="aboutAction"/>
     <addaction name="separator"/>
     <addaction name="aboutQtAction"/>
+    <addaction name="separator"/>
+    <addaction name="menuLanguage"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuBearbeiten"/>
@@ -182,6 +191,9 @@
    <property name="text">
     <string>Subsampling</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
   </action>
   <action name="saveImageAsAction">
    <property name="icon">
@@ -190,6 +202,9 @@
    </property>
    <property name="text">
     <string>Save As</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="copyAction">
@@ -206,6 +221,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionEnglish">
+   <property name="text">
+    <string>English</string>
+   </property>
+  </action>
+  <action name="actionGerman">
+   <property name="text">
+    <string>German</string>
    </property>
   </action>
  </widget>
@@ -406,6 +431,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionEnglish</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>languageEnglish()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGerman</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>languageGerman()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>open()</slot>
@@ -419,5 +476,7 @@
   <slot>saveAs()</slot>
   <slot>copyImage()</slot>
   <slot>pasteImage()</slot>
+  <slot>languageEnglish()</slot>
+  <slot>languageGerman()</slot>
  </slots>
 </ui>

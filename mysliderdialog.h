@@ -15,6 +15,7 @@ public:
     explicit MySliderDialog(QWidget *parent = 0);
     ~MySliderDialog();
     bool previewOkay;
+    void reset();
 
 signals:
     void rValueChanged(int newRValue);
