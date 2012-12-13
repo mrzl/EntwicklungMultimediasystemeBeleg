@@ -43,6 +43,30 @@ void MyGraphicsView::bValue(int b)
     }
 }
 
+void MyGraphicsView::yValue(int y){
+    currentY = y;
+    qDebug() << "y:" << y;
+    if(isPreviewed){
+        changeImage();
+    }
+}
+
+void MyGraphicsView::uValue(int u){
+    currentU = u;
+    qDebug() << "u:" << u;
+    if(isPreviewed){
+        changeImage();
+    }
+}
+
+void MyGraphicsView::vValue(int v){
+    currentV = v;
+    qDebug() << "v:" << v;
+    if(isPreviewed){
+        changeImage();
+    }
+}
+
 void MyGraphicsView::changeImage()
 {
     setEdited(true);

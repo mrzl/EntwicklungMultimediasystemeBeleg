@@ -25,6 +25,21 @@ MySliderDialog::MySliderDialog(QWidget *parent) :
             this,
             SIGNAL(bValueChanged(int)));
 
+    connect(ui->yValueSlider,
+            SIGNAL(valueChanged(int)),
+            this,
+            SIGNAL(yValueChanged(int)));
+
+    connect(ui->uValueSlider,
+            SIGNAL(valueChanged(int)),
+            this,
+            SIGNAL(uValueChanged(int)));
+
+    connect(ui->vValueSlider,
+            SIGNAL(valueChanged(int)),
+            this,
+            SIGNAL(vValueChanged(int)));
+
     connect(ui->radioButton,
             SIGNAL(clicked(bool)),
             this,

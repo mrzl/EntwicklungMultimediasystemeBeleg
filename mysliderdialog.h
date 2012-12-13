@@ -21,6 +21,9 @@ signals:
     void rValueChanged(int newRValue);
     void gValueChanged(int newGValue);
     void bValueChanged(int newBValue);
+    void yValueChanged(int newYValue);
+    void uValueChanged(int newUValue);
+    void vValueChanged(int newVValue);
     void previewChanged(bool preview);
     void buttonAccepted();
     void buttonRejected();

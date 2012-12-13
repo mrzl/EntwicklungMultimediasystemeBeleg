@@ -52,12 +52,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dialog, SIGNAL(rValueChanged(int)), view, SLOT(rValue(int)));
     connect(dialog, SIGNAL(gValueChanged(int)), view, SLOT(gValue(int)));
     connect(dialog, SIGNAL(bValueChanged(int)), view, SLOT(bValue(int)));
+    connect(dialog, SIGNAL(yValueChanged(int)), view, SLOT(yValue(int)));
+    connect(dialog, SIGNAL(uValueChanged(int)), view, SLOT(uValue(int)));
+    connect(dialog, SIGNAL(vValueChanged(int)), view, SLOT(vValue(int)));
     connect(dialog, SIGNAL(previewChanged(bool)), view, SLOT(preview(bool)));
     connect(dialog, SIGNAL(buttonAccepted()), view, SLOT(okayButton()));
     connect(dialog, SIGNAL(buttonRejected()), view, SLOT(rejectedButton()));
 
     readSettings();
 }
+
+/*
+ * --- SLOTS ---
+*/
 
 void MainWindow::open(){
     if(view->isEdited()){
@@ -87,7 +94,6 @@ void MainWindow::open(){
         }
     }
 }
-
 void MainWindow::save(){
     QString fileFormat = getFileFormat(originalFileName);
     if(!originalFileName.isEmpty()){
@@ -102,7 +108,6 @@ void MainWindow::save(){
         updateStatusBar(tr("Image could not be saved."));
     }
 }
-
 void MainWindow::saveAs(){
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("PNG")+" (*.png);;"+tr("JPEG")+" (*.jpg *.jpeg);;"+tr("BMP")+" (*.bmp)");
     QString fileFormat = getFileFormat(fileName);
@@ -118,67 +123,42 @@ void MainWindow::saveAs(){
         updateStatusBar(tr("Image could not be saved."));
     }
 }
-
-QString MainWindow::getFileFormat(QString strImageFileName){
-    QString returnString = "";
-    QStringList splittedStrList = strImageFileName.split(".");
-    if( ((splittedStrList.size())-1) >= 0) {
-        returnString = splittedStrList[((splittedStrList.size())-1)];
-    }
-    return returnString;
-}
-
 void MainWindow::zoomIn(){
     view->zoomIn(1.25);
 }
-
 void MainWindow::zoomOut(){
     view->zoomOut(0.8);
 }
-
 void MainWindow::normalSize(){
     view->resetTransform();
     updateStatusBar(tr("Image restored to original size."));
 }
-
 void MainWindow::openDialog(){
     dialog->show();
 }
-
 void MainWindow::about(){
     QMessageBox::about(this, tr("About Belegarbeit"), tr("Members: \nMarcel Schwittlick (s0529494) \nAlexander Marten (s0527574)\nDennis Hägler (s05232338)"));
 }
-
 void MainWindow::aboutQt(){
     QMessageBox::aboutQt(this);
 }
-
-void MainWindow::updateStatusBar(QString string)
-{
-    statusBar()->showMessage(string);
-}
-
 void MainWindow::rValue(int r)
 {
     view->rValue(r);
 }
-
 void MainWindow::gValue(int g)
 {
     view->gValue(g);
 }
-
 void MainWindow::bValue(int b)
 {
     view->bValue(b);
 }
-
 void MainWindow::copyImage(){
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setImage(view->imageItem->pixmap().toImage());
     updateStatusBar(tr("Copied image to clipboard."));
 }
-
 void MainWindow::pasteImage(){
     if(view->isEdited()){
         int returnValue = saveCancelDiscard();
@@ -369,4 +349,19 @@ void MainWindow::updateRecentFileActions()
          ui->retranslateUi(this);
          qDebug() << "changevent";
      }
+ }
+
+
+ QString MainWindow::getFileFormat(QString strImageFileName){
+     QString returnString = "";
+     QStringList splittedStrList = strImageFileName.split(".");
+     if( ((splittedStrList.size())-1) >= 0) {
+         returnString = splittedStrList[((splittedStrList.size())-1)];
+     }
+     return returnString;
+ }
+
+ void MainWindow::updateStatusBar(QString string)
+ {
+     statusBar()->showMessage(string);
  }

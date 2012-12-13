@@ -13,6 +13,10 @@ public slots:
     void rValue(int r);
     void gValue(int g);
     void bValue(int b);
+    void yValue(int y);
+    void uValue(int u);
+    void vValue(int v);
+
     void preview(bool preview);
     void okayButton();
     void rejectedButton();
@@ -21,7 +25,7 @@ private:
     QMainWindow *par;
     void getImageFromMimeData(const QMimeData *mimeData);
     int oldR, oldG, oldB;
-    int currentR, currentG, currentB;
+    int currentR, currentG, currentB, currentY, currentU, currentV;
     bool isPreviewed;
     int oldX, oldY;
     int getColorSum(int startW, int endW, int startH, int endH, QImage image, int color);
