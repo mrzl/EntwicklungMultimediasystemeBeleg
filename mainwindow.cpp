@@ -58,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dialog, SIGNAL(previewChanged(bool)), view, SLOT(preview(bool)));
     connect(dialog, SIGNAL(buttonAccepted()), view, SLOT(okayButton()));
     connect(dialog, SIGNAL(buttonRejected()), view, SLOT(rejectedButton()));
+    connect(dialog, SIGNAL(rgbRadio(bool)), this, SLOT(rgbRadio(bool)));
+    connect(dialog, SIGNAL(yuvRadio(bool)), this, SLOT(yuvRadio(bool)));
 
     readSettings();
 }
@@ -154,6 +156,17 @@ void MainWindow::bValue(int b)
 {
     view->bValue(b);
 }
+void MainWindow::rgbRadio(bool rgb){
+    dialog->enableRGBSliders(rgb);
+    if(rgb){
+        view->selectedMode = 4;
+    } else {
+        view->selectedMode = 5;
+    }
+}
+void MainWindow::yuvRadio(bool yuv){
+    //delete me
+}
 void MainWindow::copyImage(){
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setImage(view->imageItem->pixmap().toImage());
@@ -246,11 +259,11 @@ void MainWindow::writeSettings(){
     settings.endGroup();
 }
 
-void MainWindow::closeEvent(QCloseEvent *event){
+void MainWindow::closeEvent(QCloseEvent *event) {
     writeSettings();
-    if(view->isEdited()){
+    if(view->isEdited()) {
         int returnValue = saveCancelDiscard();
-        switch(returnValue){
+        switch(returnValue) {
         case QMessageBox::Save:
             event->accept();
             break;
@@ -263,7 +276,8 @@ void MainWindow::closeEvent(QCloseEvent *event){
     }
 }
 
-int MainWindow::saveCancelDiscard(){
+int MainWindow::saveCancelDiscard()
+{
     QMessageBox msgBox;
      msgBox.setText("The image has been edited.");
      msgBox.setInformativeText("Do you want to save your changes?");
@@ -276,9 +290,12 @@ int MainWindow::saveCancelDiscard(){
          dialog->reset();
          return QMessageBox::Save;
      } else if(ret == QMessageBox::Discard){
+         dialog->reset();
          return QMessageBox::Discard;
      } else if(ret == QMessageBox::Cancel) {
          return QMessageBox::Cancel;
+     } else {
+         return 0;
      }
 }
 
@@ -298,6 +315,7 @@ void MainWindow::openRecentFile()
 void MainWindow::setCurrentFile(const QString &fileName)
  {
      curFile = fileName;
+     dialog->reset();
 
      QSettings settings("ai.bachelor.htw-berlin.de", "EMS-Beleg");
      settings.beginGroup("RecentFiles");

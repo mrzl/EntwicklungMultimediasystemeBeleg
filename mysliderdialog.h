@@ -16,6 +16,7 @@ public:
     ~MySliderDialog();
     bool previewOkay;
     void reset();
+    void enableRGBSliders(bool rgb);
 
 signals:
     void rValueChanged(int newRValue);
@@ -25,6 +26,8 @@ signals:
     void uValueChanged(int newUValue);
     void vValueChanged(int newVValue);
     void previewChanged(bool preview);
+    void rgbRadio(bool rgb);
+    void yuvRadio(bool yuv);
     void buttonAccepted();
     void buttonRejected();
 
@@ -32,4 +35,4 @@ private:
     Ui::MySliderDialog *ui;
 };
 
-#endif MYSLIDERDIALOG_H
+#endif //MYSLIDERDIALOG_H

@@ -36,6 +36,9 @@ public slots:
     void gValue(int g);
     void bValue(int b);
 
+    void rgbRadio(bool rgb);
+    void yuvRadio(bool yuv);
+
     void copyImage();
     void pasteImage();
 

@@ -8,7 +8,6 @@ class MyGraphicsView : public QGraphicsView
     Q_OBJECT
 public:
     explicit MyGraphicsView(QMainWindow *parent);
-    explicit ~MyGraphicsView();
 
 public slots:
     void rValue(int r);
@@ -22,6 +21,9 @@ public slots:
     void okayButton();
     void rejectedButton();
 
+public:
+    int selectedMode;
+
 private:
     QMainWindow *par;
     void getImageFromMimeData(const QMimeData *mimeData);
@@ -29,10 +31,34 @@ private:
     int currentR, currentG, currentB, currentY, currentU, currentV;
     bool isPreviewed;
     int oldX, oldY;
-    int getColorSum(int startW, int endW, int startH, int endH, QImage image, int color);
+    int getRedSumInArea(int starW, int endW, int startH, int endH, int maxW);
+    int getGreenSumInArea(int starW, int endW, int startH, int endH, int maxW);
+    int getBlueSumInArea(int starW, int endW, int startH, int endH, int maxW);
+    int getYSum(int starW, int endW, int startH, int endH, int maxW);
+    int getUSum(int starW, int endW, int startH, int endH, int maxW);
+    int getVSum(int starW, int endW, int startH, int endH, int maxW);
     void changeImage();
+    void changeYuv();
     bool edited;
 
+
+    float* red;
+    float* green;
+    float* blue;
+    float* yCh;
+    float* uCh;
+    float* vCh;
+    void testChange();
+    void initArrays();
+    void reinitArrays();
+    void deleteArray();
+    void arrayToPixMapItem();
+
+    void convertRgbToYuv();
+    void convertYuvToRgb();
+    void deleteYuvArrays();
+    void calculateYuv();
+    
 public:
     QGraphicsPixmapItem *imageItem;
     QGraphicsPixmapItem *backupItem;
