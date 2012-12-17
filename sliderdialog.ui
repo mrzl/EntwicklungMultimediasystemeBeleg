@@ -237,6 +237,12 @@
      <height>16</height>
     </rect>
    </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>8</number>
+   </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
@@ -249,6 +255,12 @@
      <width>211</width>
      <height>16</height>
     </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>8</number>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
@@ -263,6 +275,12 @@
      <height>16</height>
     </rect>
    </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>8</number>
+   </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
@@ -276,6 +294,12 @@
      <height>22</height>
     </rect>
    </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>8</number>
+   </property>
   </widget>
   <widget class="QSpinBox" name="uSpinBox">
    <property name="geometry">
@@ -286,6 +310,12 @@
      <height>22</height>
     </rect>
    </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>8</number>
+   </property>
   </widget>
   <widget class="QSpinBox" name="vSpinBox">
    <property name="geometry">
@@ -295,6 +325,12 @@
      <width>46</width>
      <height>22</height>
     </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>8</number>
    </property>
   </widget>
  </widget>

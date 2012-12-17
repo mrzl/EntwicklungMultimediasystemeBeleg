@@ -8,6 +8,7 @@ class MyGraphicsView : public QGraphicsView
     Q_OBJECT
 public:
     explicit MyGraphicsView(QMainWindow *parent);
+    explicit ~MyGraphicsView();
 
 public slots:
     void rValue(int r);
@@ -31,7 +32,7 @@ private:
     int getColorSum(int startW, int endW, int startH, int endH, QImage image, int color);
     void changeImage();
     bool edited;
-    
+
 public:
     QGraphicsPixmapItem *imageItem;
     QGraphicsPixmapItem *backupItem;
